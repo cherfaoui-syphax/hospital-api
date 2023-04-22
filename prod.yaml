@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: >-
+  A simple backend (read/write to DynamoDB) with a RESTful API endpoint using
+  Amazon API Gateway.
+Resources:
+  proxximosBackendApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Live
+      Domain:
+        DomainName: api.proxximos.com
+        CertificateArn: "arn:aws:acm:eu-west-2:044675806302:certificate/b1aace48-9bfb-46ec-8e1b-d3efc6f8fd64"
+        EndpointConfiguration: REGIONAL
+  proxximosApiGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    DependsOn:
+      - proxximosBackendApi
+    Properties:
+      RestApiId: !Ref proxximosBackendApi
+  pathogens:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: pathogens/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /pathogens
+            Method: GET
+  incidents:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: incidents/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /incidents
+            Method: GET
+  incidentdetail:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: incidentdetail/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /incident_detail/{incidentId}
+            Method: GET
+  incidentsoverview:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: incidentsoverview/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /incidents_overview
+            Method: GET
+  confirmedcasestoppathogens:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: confirmedcasestoppathogens/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /confirmed_cases_top_pathogens
+            Method: GET
+  activeincidentsunreadnotifications:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: activeincidentsunreadnotifications/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /active_incidents_unread_notifications
+            Method: GET
+  activeincidentscases:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: activeincidentscases/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /active_incidents_cases
+            Method: GET
+  activeincidentspossiblecasescontaminations:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: activeincidentspossiblecasescontaminations/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: "arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok"
+      Tags:
+        "lambda-console:blueprint": microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /active_incidents_possible_cases_contaminations
+            Method: GET

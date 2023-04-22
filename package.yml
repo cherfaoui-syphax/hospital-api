@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+  using Amazon API Gateway.
+Resources:
+  pathogensTest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: pathogensTest/index.handler
+      Runtime: nodejs14.x
+      CodeUri: s3://aws-sam-cli-managed-default-samclisourcebucket-1smfplmhyyger/6bdbe8ed7b7eda6219bddf935d4f89b6
+      Description: A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok
+      Tags:
+        lambda-console:blueprint: microservice-http-endpoint
+      Events:
+        FebTestApi:
+          Type: Api
+          Properties:
+            Path: /pathogenstest
+            Method: GET
+    Metadata:
+      SamResourceId: pathogensTest

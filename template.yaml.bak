@@ -1,0 +1,211 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  A simple backend (read/write to DynamoDB) with a RESTful API endpoint using
+  Amazon API Gateway.
+Resources:
+  proxximosBackendApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Live
+      Domain:
+        DomainName: api.proxximos.com
+        CertificateArn: 'arn:aws:acm:eu-west-2:044675806302:certificate/8ba7e784-f217-4d6e-9c72-316f31440466'
+        EndpointConfiguration: REGIONAL
+  proxximosApiGatewayDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn:
+      - proxximosBackendApi
+    Properties:
+      RestApiId: !Ref proxximosBackendApi
+  pathogens:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: pathogens/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /pathogens
+            Method: GET
+  incidents:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: incidents/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /incidents
+            Method: GET
+  incidentsoverview:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: incidentsoverview/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /incidentsoverview
+            Method: GET
+  confirmedcasestoppathogens:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: confirmedcasestoppathogens/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /confirmedcasestoppathogens
+            Method: GET
+  activeincidentsunreadnotifications:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: activeincidentsunreadnotifications/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /activeincidentsunreadnotifications
+            Method: GET
+  activeincidentscases:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: activeincidentscases/index.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Description: >-
+        A simple backend (read/write to DynamoDB) with a RESTful API endpoint
+        using Amazon API Gateway.
+      MemorySize: 512
+      Timeout: 10
+      Role: 'arn:aws:iam::044675806302:role/service-role/read_pathogens-role-lu39iaok'
+      Tags:
+        'lambda-console:blueprint': microservice-http-endpoint
+      Events:
+        proxximosBackendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref proxximosBackendApi
+            Path: /activeincidentscases
+            Method: GET
+  pathogensTest:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: pathogen_id
+          AttributeType: N
+        - AttributeName: pathogen_name
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pathogen_id
+          KeyType: HASH
+        - AttributeName: pathogen_name
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      Items:
+        - !Transform
+            Name: 'AWS::Include'
+            Parameters:
+              Location: 's3://proxximos/dynamodb_table_csvs/pathogens.csv'
+        - !Transform
+            Name: 'AWS::IncludeTransform'
+            Parameters:
+              Type: 'AWS::DynamoDB::Table'
+              TemplatePath: 'Items'
+  ChangeSetPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: 'Policy to allow creating a CloudFormation Change Set'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cloudformation:CreateChangeSet'
+            Resource: 'arn:aws:cloudformation:eu-west-2:aws:transform/IncludeTransform'
+
+  ChangeSetRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: 'ChangeSetRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - !Ref ChangeSetPolicy
+
+  PolicyAttachment:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'CloudFormationChangeSetPolicy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cloudformation:CreateChangeSet'
+            Resource: 'arn:aws:cloudformation:eu-west-2:aws:transform/IncludeTransform'
+      Roles:
+        - !Ref ChangeSetRole
