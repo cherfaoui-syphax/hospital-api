@@ -1,25 +1,23 @@
 const AWS = require("aws-sdk");
-const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
     const { queryStringParameters } = event;
-    const { ward, token, dateRange } = queryStringParameters;
+    const { token } = queryStringParameters;
     
-    if (!ward || !token || !dateRange) {
+    if (!token) {
         const result = {
-            statusCode: 400,
+            statusCode: 500,
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers" : "*",
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({'error': 'ward, dateRange or token missing'})
+            body: JSON.stringify({'error': 'ward or token missing'})
         };  
         return result;
     }
     
 
-    
     const response = {
         cases : {
             number: 20 , 
@@ -41,6 +39,8 @@ exports.handler = async (event) => {
         }
     };
 
+
+    
     const result = {
         statusCode: 200,
         headers: {
