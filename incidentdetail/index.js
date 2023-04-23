@@ -6,6 +6,9 @@ exports.handler = async (event) => {
   const { ward, token } = queryStringParameters;
   const { incidentId } = pathParameters;
 
+  let response;
+  let result;
+
   if (!ward || !token) {
     const result = {
       statusCode: 500,
@@ -19,6 +22,48 @@ exports.handler = async (event) => {
     return result;
   }
 
+  let params = {
+    TableName: "incidents",
+    Key: {
+      incident_id: parseInt(incidentId),
+    },
+  };
+
+  try {
+    await dynamo
+      .get(params, function (err, data) {
+        if (err) response = err;
+        else response = data;
+      })
+      .promise();
+  } catch (e) {
+    response = e;
+    result = {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ error: e }),
+    };
+    return result;
+  }
+
+  result = {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "*",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      data: response && response.Item ? response.Item : false,
+    }),
+  };
+  return result;
+
+  /*
   const dummyData = [
     {
       id: "QE-BA-DAR1",
@@ -157,4 +202,5 @@ exports.handler = async (event) => {
     body: JSON.stringify({ data: response }),
   };
   return result;
+  */
 };

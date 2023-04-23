@@ -2,11 +2,14 @@ const AWS = require("aws-sdk");
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
-  const { queryStringParameters } = event;
+  const { queryStringParameters, body } = event;
   const { ward, token } = queryStringParameters;
 
+  let response;
+  let result;
+
   if (!ward || !token) {
-    const result = {
+    result = {
       statusCode: 500,
       headers: {
         "Access-Control-Allow-Origin": "*",
@@ -18,25 +21,32 @@ exports.handler = async (event) => {
     return result;
   }
 
-  // insert logic here to filter the results according to what wards the user is allowed to see
+  if (event.httpMethod === "GET") {
+    let params = {
+      TableName: "incidents",
+    };
 
-  // let params = {
-  //   TableName: "pathogens",
-  // }
-
-  // let response;
-
-  // try {
-
-  //     const tableQuery = await dynamo.scan(params, function(err, data) {
-  //       if (err) response = err;
-  //       else response = data;
-  //     }).promise();
-
-  // } catch(e) {
-  //     response = e;
-  // }
-
+    try {
+      await dynamo
+        .scan(params, function (err, data) {
+          if (err) response = err;
+          else response = data;
+        })
+        .promise();
+    } catch (e) {
+      response = e;
+      result = {
+        statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ error: e }),
+      };
+      return result;
+    }
+    /*
   const response = [
     {
       id: "QE-BA-DAR1",
@@ -171,4 +181,19 @@ exports.handler = async (event) => {
     body: JSON.stringify({ data: response }),
   };
   return result;
+*/
+
+    result = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: response && response.Items ? response.Items : [],
+      }),
+    };
+    return result;
+  }
 };
