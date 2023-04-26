@@ -47,19 +47,11 @@ exports.handler = async (event) => {
       },
       {
         pathogen: "E. coli",
-        percentage: 75,
+        percentage: 39,
       },
       {
         pathogen: "MRSA",
         percentage: 15,
-      },
-      {
-        pathogen: "Staphylococcus Aureus",
-        percentage: 8,
-      },
-      {
-        pathogen: "Staphylococcus Aureus",
-        percentage: 8,
       },
       {
         pathogen: "Staphylococcus Aureus",
