@@ -14,6 +14,7 @@ exports.handler = async (event) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ error: "ward or token missing" }),

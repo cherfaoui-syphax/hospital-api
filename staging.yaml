@@ -12,6 +12,10 @@ Resources:
         DomainName: api-staging.proxximos.com
         CertificateArn: "arn:aws:acm:eu-west-2:044675806302:certificate/b1aace48-9bfb-46ec-8e1b-d3efc6f8fd64"
         EndpointConfiguration: REGIONAL
+      Cors:
+        AllowMethods: "'GET,POST,PUT'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
   proxximosApiGatewayDeployment:
     Type: "AWS::ApiGateway::Deployment"
     DependsOn:
@@ -228,7 +232,6 @@ Resources:
             RestApiId: !Ref proxximosBackendApi
             Path: /pathogen_categories
             Method: GET
-
   overviewEvolution:
     Type: "AWS::Serverless::Function"
     Properties:
@@ -250,7 +253,6 @@ Resources:
             RestApiId: !Ref proxximosBackendApi
             Path: /overview_evolution
             Method: GET
-
   getRoles:
     Type: "AWS::Serverless::Function"
     Properties:
